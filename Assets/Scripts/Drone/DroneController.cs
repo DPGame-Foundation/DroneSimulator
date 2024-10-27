@@ -12,6 +12,8 @@ public class DroneController : BaseRigidbody
     [SerializeField] private float yawPower = 4f;
     [SerializeField] private float lerpSpeed = 2f;
 
+    [SerializeField] private float maxPower = 4f;
+
     public bool allowFree = false;
 
     private DroneInput input;
@@ -38,7 +40,7 @@ public class DroneController : BaseRigidbody
     protected virtual void HandleEngines() {
         //rb.AddForce(Vector3.up * (rb.mass * Physics.gravity.magnitude));
         foreach(IEngine engine in engines) {
-            engine.UpdateEngine(rb, input);
+            engine.UpdateEngine(rb, input, maxPower);
         }
     }
 

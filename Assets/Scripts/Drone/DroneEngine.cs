@@ -5,7 +5,6 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class DroneEngine : MonoBehaviour, IEngine
 {
-    [SerializeField] private float maxPower = 4f;
     [SerializeField] private Transform propeller;
     [SerializeField] private float propRotSpeed = 300f;
 
@@ -14,7 +13,7 @@ public class DroneEngine : MonoBehaviour, IEngine
         throw new System.NotImplementedException();
     }
 
-    public void UpdateEngine(Rigidbody rb, DroneInput input)
+    public void UpdateEngine(Rigidbody rb, DroneInput input, float maxPower)
     {
         //Debug.Log("Running Engine: " + gameObject.name);
         //Debug.Log("Throttle Engine: " + input.Throttle);

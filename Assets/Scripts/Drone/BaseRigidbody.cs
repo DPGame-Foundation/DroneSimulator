@@ -16,8 +16,8 @@ public class BaseRigidbody : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         if (rb) {
             rb.mass = weightInKg;
-            startDrag = rb.drag;
-            startAngularDrag = rb.angularDrag;
+            startDrag = rb.linearDamping;
+            startAngularDrag = rb.angularDamping;
         }
     }
 

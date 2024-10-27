@@ -11,16 +11,15 @@ public class DroneInput : MonoBehaviour
     private float throttle;
 
     public bool startStop;
+    public bool goHome;
 
-    public Vector2 Cyclic {get => cyclic;}
-    public float Pedals {get => pedals;}
-    public float Throttle {get => throttle;}
-    public bool StartStop {get => startStop;}
+    public Vector2 Cyclic { get => cyclic; }
+    public float Pedals { get => pedals; }
+    public float Throttle { get => throttle; }
+    public bool StartStop { get => startStop; }
+    public bool GoHome { get => goHome; }
 
-    void Update()
-    {
-        
-    }
+    void Update() { }
 
     private void OnCyclic(InputValue value) {
         cyclic = value.Get<Vector2>();
@@ -36,5 +35,9 @@ public class DroneInput : MonoBehaviour
 
     private void OnStartStop(InputValue value) {
         startStop = !startStop;
+    }
+
+    private void OnGoHome(InputValue value) {
+        goHome = !goHome;
     }
 }
