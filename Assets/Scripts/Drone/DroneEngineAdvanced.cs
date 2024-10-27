@@ -36,7 +36,7 @@ public class DroneEngineAdvanced : MonoBehaviour, IEngine
         throw new System.NotImplementedException();
     }
 
-    public void UpdateEngine(Rigidbody rb, DroneInput input, float maxPower)
+    public void UpdateEngine(Rigidbody rb, float throttle, float maxPower)
     {
         float deltaTime = Time.deltaTime;
 
@@ -51,7 +51,7 @@ public class DroneEngineAdvanced : MonoBehaviour, IEngine
         float rollControl = rollPID.Update(targetRoll, currentRoll, deltaTime);
 
         // Calculate the total engine force based on PID outputs
-        Vector3 engineForce = transform.up * (altitudeControl + (input.Throttle * maxPower)) / 4f;
+        Vector3 engineForce = transform.up * (altitudeControl + (throttle * maxPower)) / 4f;
 
         rb.AddForce(engineForce, ForceMode.Force);
 

@@ -1,8 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using UnityEngine.TextCore;
 
 [RequireComponent(typeof(DroneInput))]
 public class DroneController : BaseRigidbody
@@ -10,59 +7,75 @@ public class DroneController : BaseRigidbody
     [SerializeField] private float minMaxPitch = 30f;
     [SerializeField] private float minMaxRoll = 30f;
     [SerializeField] private float yawPower = 4f;
-    [SerializeField] private float lerpSpeed = 2f;
-
     [SerializeField] private float maxPower = 4f;
-
-    public bool allowFree = false;
+    [SerializeField] private float motorBaseForce = 9.8f;
 
     private DroneInput input;
-    private List<IEngine> engines = new List<IEngine>();
 
-    private float finalPitch;
-    private float finalRoll;
-    private float yaw;
-    private float finalYaw;
+    [SerializeField] private DroneEngine frontRightEngine;
+    [SerializeField] private DroneEngine frontLeftEngine;
+    [SerializeField] private DroneEngine backRightEngine;
+    [SerializeField] private DroneEngine backLeftEngine;
+
+    private Vector3 homePosition = new Vector3(0, 1, 0);
+    private float pitch, roll, yaw;
 
     void Start()
     {
         input = GetComponent<DroneInput>();
-        engines = GetComponentsInChildren<IEngine>().ToList<IEngine>();
     }
 
-    protected override void HandlePhysics() {
-        if (input.startStop) {
-            HandleEngines();
+    protected override void HandlePhysics()
+    {
+        if (input.goHome)
+        {
+            GoHome();
+            input.goHome = false;
+        }
+        else if (input.startStop)
+        {
             HandleControls();
         }
     }
 
-    protected virtual void HandleEngines() {
-        //rb.AddForce(Vector3.up * (rb.mass * Physics.gravity.magnitude));
-        foreach(IEngine engine in engines) {
-            engine.UpdateEngine(rb, input, maxPower);
-        }
+    private void GoHome()
+    {
+        transform.rotation = Quaternion.identity;
+        transform.position = homePosition;
     }
 
-    protected virtual void HandleControls() {
-        float pitch = input.Cyclic.y * minMaxPitch;
-        float roll = -input.Cyclic.x * minMaxRoll;
-        if (!allowFree) {
-            yaw += input.Pedals * yawPower;
+    protected virtual void HandleControls()
+    {
+        pitch = input.Cyclic.y * minMaxPitch;
+        roll = -input.Cyclic.x * minMaxRoll;
+        yaw = input.Pedals * yawPower;
 
-            finalPitch = Mathf.Lerp(finalPitch, pitch, Time.deltaTime * lerpSpeed);
-            finalRoll = Mathf.Lerp(finalRoll, roll, Time.deltaTime * lerpSpeed);
-            finalYaw = Mathf.Lerp(finalYaw, yaw, Time.deltaTime * lerpSpeed);
-        } else {
-            finalPitch += pitch * Time.deltaTime; // Allow continuous pitch rotation
-            finalRoll += roll * Time.deltaTime;   // Allow continuous roll rotation
+        float throttle = Mathf.Clamp(input.Throttle, 0f, 1f);
 
-            // Update yaw based on pedal input
-            finalYaw += input.Pedals * yawPower * Time.deltaTime;
-        }
+        ApplyMotorForces(throttle, pitch, roll, yaw);
+    }
 
-        Quaternion rot = Quaternion.Euler(finalPitch, finalYaw, finalRoll);
-        rb.MoveRotation(rot);
+    private void ApplyMotorForces(float throttle, float pitch, float roll, float yaw)
+    {
+        // Base force from throttle input, modulated by motor base force and throttle level
+        float baseForce = motorBaseForce * throttle;
 
+        // Calculate each motor's force for pitch, roll, and yaw controls
+        float frontRightForce = baseForce + (pitch * 0.5f) + (roll * 0.5f) - (yaw * 0.5f);
+        float frontLeftForce = baseForce + (pitch * 0.5f) - (roll * 0.5f) + (yaw * 0.5f);
+        float backRightForce = baseForce - (pitch * 0.5f) + (roll * 0.5f) + (yaw * 0.5f);
+        float backLeftForce = baseForce - (pitch * 0.5f) - (roll * 0.5f) - (yaw * 0.5f);
+
+        // Clamp forces to max power level for each motor
+        frontRightForce = Mathf.Clamp(frontRightForce, 0, maxPower);
+        frontLeftForce = Mathf.Clamp(frontLeftForce, 0, maxPower);
+        backRightForce = Mathf.Clamp(backRightForce, 0, maxPower);
+        backLeftForce = Mathf.Clamp(backLeftForce, 0, maxPower);
+
+        // Apply forces to each engine
+        frontRightEngine.UpdateEngine(rb, frontRightForce);
+        frontLeftEngine.UpdateEngine(rb, frontLeftForce);
+        backRightEngine.UpdateEngine(rb, backRightForce);
+        backLeftEngine.UpdateEngine(rb, backLeftForce);
     }
 }
