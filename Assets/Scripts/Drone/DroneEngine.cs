@@ -9,8 +9,16 @@ public class DroneEngine : MonoBehaviour
     [SerializeField] private float propRotSpeed = 300f;
     [SerializeField] private float maxPropRotSpeedMultiplier = 2f; // Maximum multiplier for propeller speed
     [SerializeField] private float maxPitch = 2f; // Maximum pitch for the engine sound
+    [SerializeField] private DroneBattery battery; // Reference to the battery
 
     private AudioSource audioSource;
+    private float targetMotorForce = 0f;
+    private float currentMotorForce = 0f;
+    private float forceSmoothTime = 0.1f; // Smooth time for motor force interpolation
+    private float forceVelocity = 0f; // Used for SmoothDamp
+
+    // Nominal voltage for the battery
+    [SerializeField] private float nominalVoltage = 12f; // Nominal voltage of the battery
 
     private void Start()
     {
@@ -25,51 +33,75 @@ public class DroneEngine : MonoBehaviour
 
     public void UpdateEngine(Rigidbody rb, float motorForce)
     {
-        Vector3 engineForce = transform.up * motorForce;
+        if (battery.IsBatteryDepleted()) // Check if battery is depleted
+        {
+            motorForce = 0f; // Disable motor if battery is depleted
+            HandleEngineSound(0); // Stop sound if no motor force
+        }
+        else
+        {
+            // Get the current voltage
+            float currentVoltage = battery.GetCurrentVoltage();
+            // Calculate a dynamic scaling factor based on the voltage
+            float voltageFactor = currentVoltage / nominalVoltage;
+
+            // Limit the scaling factor to a minimum of 0.1 (10% performance) for realism
+            voltageFactor = Mathf.Clamp(voltageFactor, 0.1f, 1f);
+
+            // Scale the motor force dynamically based on the voltage factor
+            motorForce *= voltageFactor;
+        }
+
+        // Set the target motor force, which will be smoothed in the update
+        targetMotorForce = motorForce;
+
+        // Interpolate motor force to make transitions smooth
+        currentMotorForce = Mathf.SmoothDamp(currentMotorForce, targetMotorForce, ref forceVelocity, forceSmoothTime);
+
+        battery.UseBatteryPower(currentMotorForce * Time.deltaTime); // Use battery power based on motor force
+
+        Vector3 engineForce = transform.up * currentMotorForce;
         rb.AddForceAtPosition(engineForce, propeller.transform.position); // Apply at motor position
 
-        if (motorForce > 0) {
-            HandlePropeller(motorForce); // Pass motorForce to adjust propeller speed
-            HandleEngineSound(motorForce); // Adjust sound based on force
-        }
+        HandlePropeller(currentMotorForce); // Pass motorForce to adjust propeller speed
+        HandleEngineSound(currentMotorForce); // Adjust sound based on force
     }
 
     private void HandlePropeller(float motorForce)
     {
         if (!propeller) return;
 
-        propeller.Rotate(Vector3.forward, propRotSpeed * motorForce  * Time.deltaTime);
+        if (motorForce > 0) {
+            propeller.Rotate(Vector3.forward, propRotSpeed * motorForce * Time.deltaTime);
+        }
     }
 
     private void HandleEngineSound(float motorForce)
-{
-    if (audioSource == null) return;
-
-    Debug.Log(motorForce);
-
-    if (motorForce > 1)
     {
-        // Start playing if not already playing
-        if (!audioSource.isPlaying)
+        if (audioSource == null) return;
+
+        if (motorForce > 0.01)
         {
-            audioSource.Play();
+            // Start playing if not already playing
+            if (!audioSource.isPlaying)
+            {
+                audioSource.Play();
+            }
+
+            // Adjust the pitch based on the motor force
+            float pitch = Mathf.Lerp(1f, maxPitch, motorForce / 10f); // Adjust 10f for responsiveness
+            audioSource.pitch = Mathf.Clamp(pitch, 1f, maxPitch);
+
+            // Adjust volume based on motor force (optional)
+            // audioSource.volume = Mathf.Clamp(motorForce / 10f, 0.2f, 1f); // Set a minimum volume for realism
         }
-
-        // Adjust the pitch based on the motor force
-        float pitch = Mathf.Lerp(1f, maxPitch, motorForce / 10f); // Adjust 10f for responsiveness
-        audioSource.pitch = Mathf.Clamp(pitch, 1f, maxPitch);
-
-        // Adjust volume based on motor force (optional)
-        //audioSource.volume = Mathf.Clamp(motorForce / 10f, 0.2f, 1f); // Set a minimum volume for realism
-    }
-    else
-    {
-        // Stop playing if motorForce is zero
-        if (audioSource.isPlaying)
+        else
         {
-            audioSource.Stop();
+            // Stop playing if motorForce is zero
+            if (audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
         }
     }
-}
-
 }

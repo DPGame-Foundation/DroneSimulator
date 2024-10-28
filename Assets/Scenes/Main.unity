@@ -277,9 +277,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   propeller: {fileID: 1067167703}
-  propRotSpeed: 300
+  propRotSpeed: 1000
   maxPropRotSpeedMultiplier: 10
   maxPitch: 2
+  battery: {fileID: 745467588}
+  nominalVoltage: 12
 --- !u!65 &697353072
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -314,7 +316,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 86898e41f03bb304ebb07bf2f15fef9f, type: 3}
   m_Resource: {fileID: 8300000, guid: 86898e41f03bb304ebb07bf2f15fef9f, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -514,6 +516,7 @@ GameObject:
   - component: {fileID: 745467586}
   - component: {fileID: 745467585}
   - component: {fileID: 745467587}
+  - component: {fileID: 745467588}
   m_Layer: 0
   m_Name: Drone
   m_TagString: Untagged
@@ -605,6 +608,9 @@ MonoBehaviour:
   frontLeftEngine: {fileID: 1256406346}
   backRightEngine: {fileID: 697353071}
   backLeftEngine: {fileID: 1539314708}
+  easyMode: 0
+  easyModeSpeed: 0.5
+  easyModeStabilizationFactor: 0.2
 --- !u!54 &745467586
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -653,6 +659,27 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 0.19781184, z: 1}
   m_Center: {x: 0, y: 0.0029255152, z: 0}
+--- !u!114 &745467588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745467579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dceb8f0580d0584ebc3391a60db0dcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxCharge: 100
+  currentCharge: 100
+  rechargeRate: 10
+  criticalChargeThreshold: 10
+  nominalVoltage: 12
+  loadEffectMultiplier: 1
+  recoveryRate: 12
+  useRate: 0.01
+  infinityMode: 0
 --- !u!4 &784488190 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 1860d34e1bb20454eafce0acf664508b, type: 3}
@@ -824,9 +851,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   propeller: {fileID: 1233379675}
-  propRotSpeed: 300
+  propRotSpeed: 1000
   maxPropRotSpeedMultiplier: 10
   maxPitch: 2
+  battery: {fileID: 745467588}
+  nominalVoltage: 12
 --- !u!65 &1256406347
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1061,9 +1090,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   propeller: {fileID: 67404806}
-  propRotSpeed: 300
+  propRotSpeed: 1000
   maxPropRotSpeedMultiplier: 10
   maxPitch: 2
+  battery: {fileID: 745467588}
+  nominalVoltage: 12
 --- !u!65 &1539314709
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1098,7 +1129,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 86898e41f03bb304ebb07bf2f15fef9f, type: 3}
   m_Resource: {fileID: 8300000, guid: 86898e41f03bb304ebb07bf2f15fef9f, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1325,9 +1356,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   propeller: {fileID: 1763127096}
-  propRotSpeed: 300
+  propRotSpeed: 1000
   maxPropRotSpeedMultiplier: 10
   maxPitch: 2
+  battery: {fileID: 745467588}
+  nominalVoltage: 12
 --- !u!65 &1705942044
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1362,7 +1395,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 86898e41f03bb304ebb07bf2f15fef9f, type: 3}
   m_Resource: {fileID: 8300000, guid: 86898e41f03bb304ebb07bf2f15fef9f, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0

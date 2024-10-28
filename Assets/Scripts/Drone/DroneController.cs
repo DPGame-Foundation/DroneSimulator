@@ -20,6 +20,13 @@ public class DroneController : BaseRigidbody
     private Vector3 homePosition = new Vector3(0, 1, 0);
     private float pitch, roll, yaw;
 
+    // New variable for easy mode
+    [SerializeField] private bool easyMode = false;
+
+    // New variables for easy mode
+    [SerializeField] private float easyModeSpeed = 0.5f;
+    [SerializeField] private float easyModeStabilizationFactor = 0.2f;
+
     void Start()
     {
         input = GetComponent<DroneInput>();
@@ -46,13 +53,30 @@ public class DroneController : BaseRigidbody
 
     protected virtual void HandleControls()
     {
-        pitch = input.Cyclic.y * minMaxPitch;
-        roll = -input.Cyclic.x * minMaxRoll;
-        yaw = input.Pedals * yawPower;
+        // If in easy mode, simplify controls
+        if (easyMode)
+        {
+            // Use throttle to control altitude
+            float throttle = Mathf.Clamp(input.Throttle, 0f, 1f);
+            float targetHeight = Mathf.Lerp(transform.position.y, homePosition.y, easyModeStabilizationFactor);
+            transform.position = new Vector3(transform.position.x, targetHeight, transform.position.z);
 
-        float throttle = Mathf.Clamp(input.Throttle, 0f, 1f);
+            // Simple forward/backward control
+            pitch = input.Cyclic.y * minMaxPitch * easyModeSpeed;
+            roll = -input.Cyclic.x * minMaxRoll * easyModeSpeed;
 
-        ApplyMotorForces(throttle, pitch, roll, yaw);
+            // Stabilize yaw
+            yaw = 0f;
+        }
+        else
+        {
+            // Normal controls
+            pitch = input.Cyclic.y * minMaxPitch;
+            roll = -input.Cyclic.x * minMaxRoll;
+            yaw = input.Pedals * yawPower;
+        }
+
+        ApplyMotorForces(Mathf.Clamp(input.Throttle, 0f, 1f), pitch, roll, yaw);
     }
 
     private void ApplyMotorForces(float throttle, float pitch, float roll, float yaw)
