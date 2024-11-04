@@ -20,6 +20,9 @@ public class DroneEngine : MonoBehaviour
     // Nominal voltage for the battery
     [SerializeField] private float nominalVoltage = 12f; // Nominal voltage of the battery
 
+    [SerializeField] private float instabilityFactor = 0.1f; // Adjust this to increase or decrease instability
+    [SerializeField] private bool enableInstability = true; // Checkbox to enable or disable instability
+
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -50,6 +53,16 @@ public class DroneEngine : MonoBehaviour
 
             // Scale the motor force dynamically based on the voltage factor
             motorForce *= voltageFactor;
+
+            // Simulate motor instability if enabled
+            if (enableInstability)
+            {
+                float fluctuation = Random.Range(-instabilityFactor, instabilityFactor);
+                motorForce += fluctuation; // Apply the instability effect
+
+                // Clamp the motorForce to prevent it from going negative
+                motorForce = Mathf.Max(0f, motorForce);
+            }
         }
 
         // Set the target motor force, which will be smoothed in the update
@@ -71,8 +84,13 @@ public class DroneEngine : MonoBehaviour
     {
         if (!propeller) return;
 
-        if (motorForce > 0) {
-            propeller.Rotate(Vector3.forward, propRotSpeed * motorForce * Time.deltaTime);
+        if (motorForce > 0)
+        {
+            // Create a rotation around the Z-axis based on propRotSpeed and motorForce
+            Quaternion rotation = Quaternion.Euler(0, 0, propRotSpeed * motorForce * Time.deltaTime);
+            
+            // Apply the rotation to the current rotation of the propeller
+            propeller.rotation *= rotation; // or propeller.Rotate(rotation.eulerAngles);
         }
     }
 

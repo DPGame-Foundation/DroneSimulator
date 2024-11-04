@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.XR;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,11 +14,15 @@ public class DroneInput : MonoBehaviour
     public bool startStop;
     public bool goHome;
 
+    public bool boost;
+
     public Vector2 Cyclic { get => cyclic; }
     public float Pedals { get => pedals; }
     public float Throttle { get => throttle; }
     public bool StartStop { get => startStop; }
     public bool GoHome { get => goHome; }
+
+    public bool Boost { get => boost; }
 
     void Update() { }
 
@@ -39,5 +44,9 @@ public class DroneInput : MonoBehaviour
 
     private void OnGoHome(InputValue value) {
         goHome = !goHome;
+    }
+
+    private void OnBoost(InputValue value) {
+        boost = !boost;
     }
 }
