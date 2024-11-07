@@ -31,6 +31,8 @@ public class DroneController : BaseRigidbody
     private bool isPitchInverted = false;
     private bool isRollInverted = false;
 
+    private float current_alt = 0f;
+
     //[SerializeField] private LidarSensor lidarSensor;
 
     [SerializeField] private IMUSensor imuSensor;
@@ -52,6 +54,7 @@ public class DroneController : BaseRigidbody
         {
             DetectControlInversion();
         }
+
     }
 
     private void DetectControlInversion()
@@ -75,6 +78,7 @@ public class DroneController : BaseRigidbody
 
     protected override void HandlePhysics() 
     {
+
         if (input.goHome) 
         {
             GoHome();
@@ -106,18 +110,22 @@ public class DroneController : BaseRigidbody
     {
         // Apply auto-inversion or manual inversion
         pitch = (autoInvertControls ? (isPitchInverted ? -1 : 1) : 1) 
-                * input.Cyclic.y * minMaxPitch;
+                * -input.Cyclic.y * minMaxPitch;
         
         roll = (autoInvertControls ? (isRollInverted ? -1 : 1) : 1) 
                * -input.Cyclic.x * minMaxRoll;
         
         yaw = input.Pedals * yawPower;
+
+        float throttle = input.Throttle;
         
-        ApplyMotorForces(Mathf.Clamp(input.Throttle, 0f, 1f), pitch, roll, yaw);
+        ApplyMotorForces(throttle, pitch, roll, yaw);
     }
 
     private void ApplyMotorForces(float throttle, float pitch, float roll, float yaw) 
     {
+        Debug.Log("throttle: " + throttle + ", pitch: " + pitch + ", roll: " + roll + ", yaw: " + yaw);
+        
         // Base force from throttle input, modulated by motor base force and throttle level
         float baseForce = currentBoost * throttle;
 
@@ -133,7 +141,6 @@ public class DroneController : BaseRigidbody
         backRightForce = Mathf.Clamp(backRightForce, 0, maxPower);
         backLeftForce = Mathf.Clamp(backLeftForce, 0, maxPower);
 
-        Debug.Log("FRF: " + frontRightForce + ", FLF: " + frontLeftForce + ", BRF: " + backRightForce + ", BLF: " + backLeftForce);
 
         // Apply forces to each engine
         frontRightEngine.UpdateEngine(rb, frontRightForce);
