@@ -76,6 +76,11 @@ public class IMUSensor : MonoBehaviour
         return angularVelocity.z;
     }
 
+    public float GetAltitude()
+    {
+        return CurrentPosition.y; // Altitude is the y-coordinate of the position
+    }
+
     // Helper function to convert Euler angles to -180 to +180 range
     private Vector3 ConvertToMinus180To180(Vector3 euler)
     {

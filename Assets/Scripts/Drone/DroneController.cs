@@ -44,11 +44,13 @@ public class DroneController : BaseRigidbody
 
     void Update() 
     {
-        float roll = imuSensor.GetRoll();
-        float pitch = imuSensor.GetPitch();
-        float yaw = imuSensor.GetYaw();
+        float alt = imuSensor.GetAltitude();
 
-        //Debug.Log("Roll: " + roll + ", Pitch: " + pitch + ", Yaw: " + yaw);
+        Debug.Log("Altitude: " + alt);
+
+        if (input.startStop) {
+            current_alt = alt;
+        }
 
         if (autoInvertControls)
         {
@@ -136,10 +138,10 @@ public class DroneController : BaseRigidbody
         float backLeftForce = baseForce - (pitch * 0.5f) - (roll * 0.5f);
 
         // Clamp forces to max power level for each motor
-        frontRightForce = Mathf.Clamp(frontRightForce, 0, maxPower);
-        frontLeftForce = Mathf.Clamp(frontLeftForce, 0, maxPower);
-        backRightForce = Mathf.Clamp(backRightForce, 0, maxPower);
-        backLeftForce = Mathf.Clamp(backLeftForce, 0, maxPower);
+        frontRightForce = Mathf.Clamp(frontRightForce, -maxPower, maxPower);
+        frontLeftForce = Mathf.Clamp(frontLeftForce, -maxPower, maxPower);
+        backRightForce = Mathf.Clamp(backRightForce, -maxPower, maxPower);
+        backLeftForce = Mathf.Clamp(backLeftForce, -maxPower, maxPower);
 
 
         // Apply forces to each engine
