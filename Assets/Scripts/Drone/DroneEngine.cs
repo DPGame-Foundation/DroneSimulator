@@ -73,9 +73,14 @@ public class DroneEngine : MonoBehaviour
 
         battery.UseBatteryPower(currentMotorForce * Time.deltaTime); // Use battery power based on motor force
 
-        Vector3 engineForce = transform.up * currentMotorForce;
-        rb.AddForceAtPosition(engineForce, propeller.transform.position); // Apply at motor position
+        //Vector3 engineForce = transform.up * currentMotorForce;
+        //rb.AddForceAtPosition(engineForce, propeller.transform.position); // Apply at motor position
 
+        Vector3 engineForce = Vector3.zero;
+        engineForce = transform.up * currentMotorForce;
+
+        rb.AddForce(engineForce, ForceMode.Force);
+        
         HandlePropeller(currentMotorForce); // Pass motorForce to adjust propeller speed
         HandleEngineSound(currentMotorForce); // Adjust sound based on force
     }

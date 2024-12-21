@@ -348,7 +348,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &169532283
 Transform:
   m_ObjectHideFlags: 0
@@ -762,6 +762,7 @@ GameObject:
   - component: {fileID: 745467585}
   - component: {fileID: 745467589}
   - component: {fileID: 745467587}
+  - component: {fileID: 745467591}
   - component: {fileID: 745467588}
   - component: {fileID: 745467590}
   m_Layer: 2
@@ -842,7 +843,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 745467579}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4105b481ff4deb044b941a1f79c5c16a, type: 3}
   m_Name: 
@@ -854,13 +855,13 @@ MonoBehaviour:
   maxPower: 10
   motorBaseForce: 3.5
   autoInvertControls: 1
-  directionChangeThreshold: 1
+  directionChangeThreshold: 0.1
   frontRightEngine: {fileID: 1705942043}
   frontLeftEngine: {fileID: 1256406346}
   backRightEngine: {fileID: 697353071}
   backLeftEngine: {fileID: 1539314708}
   BoostDup: 2
-  imuSensor: {fileID: 1083248296}
+  imuSensor: {fileID: 0}
 --- !u!54 &745467586
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -955,6 +956,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 0}
+--- !u!114 &745467591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745467579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 692278b1bafa41d48affd7311fcdda0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weightInKg: 1
+  minMaxPitch: 150
+  minMaxRoll: 150
+  yawPower: 150
+  maxPower: 5
+  motorBaseForce: 9.8
+  BoostDup: 2
+  imuSensor: {fileID: 1083248296}
+  motors:
+  - {fileID: 1539314708}
+  - {fileID: 697353071}
+  - {fileID: 1256406346}
+  - {fileID: 1705942043}
 --- !u!4 &784488190 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 1860d34e1bb20454eafce0acf664508b, type: 3}
@@ -1931,6 +1957,7 @@ GameObject:
   - component: {fileID: 2045096423}
   - component: {fileID: 2045096422}
   - component: {fileID: 2045096421}
+  - component: {fileID: 2045096424}
   m_Layer: 2
   m_Name: Camera
   m_TagString: Untagged
@@ -2012,6 +2039,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 745467580}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2045096424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045096420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2d98e5bfcdff4847ad69efa861a8e7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ndiName: OpenUAV
+  _keepAlpha: 0
+  _captureMethod: 1
+  _sourceCamera: {fileID: 2045096422}
+  _sourceTexture: {fileID: 0}
+  _resources: {fileID: 11400000, guid: 69304b86950074db7ba8caba75214004, type: 2}
 --- !u!1001 &2089267466
 PrefabInstance:
   m_ObjectHideFlags: 0

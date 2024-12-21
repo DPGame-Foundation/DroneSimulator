@@ -126,7 +126,7 @@ public class DroneController : BaseRigidbody
 
     private void ApplyMotorForces(float throttle, float pitch, float roll, float yaw) 
     {
-        Debug.Log("throttle: " + throttle + ", pitch: " + pitch + ", roll: " + roll + ", yaw: " + yaw);
+        //Debug.Log("throttle: " + throttle + ", pitch: " + pitch + ", roll: " + roll + ", yaw: " + yaw);
         
         // Base force from throttle input, modulated by motor base force and throttle level
         float baseForce = currentBoost * throttle;
